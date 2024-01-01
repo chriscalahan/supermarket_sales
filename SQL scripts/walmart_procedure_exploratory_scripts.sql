@@ -21,6 +21,7 @@ BEGIN
 		ORDER BY potential_sales DESC
 		LIMIT 10
 	)
+	
 	SELECT store_name,
 	potential_sales,
 	ROUND((potential_sales / (SELECT SUM(potential_sales) FROM potent_sales) * 100),2) AS percent
@@ -28,7 +29,8 @@ BEGIN
     
 	# BEST sales year and amount for each store
     
-    WITH top_sales AS (
+    WITH top_sales AS 
+	(
 		SELECT store_name, 
 		ROUND(SUM(unit_price * quantity),2) AS total_sales, 
 		YEAR(date) AS sale_year,
@@ -38,7 +40,8 @@ BEGIN
 			ON ws.product_id = wi.product_id
 		GROUP BY sale_year, store_name
 		ORDER BY ranking, sale_year
-        ) 
+        )
+		
 	SELECT store_name, sale_year, total_sales
 	FROM top_sales
 	WHERE ranking = 1
@@ -59,13 +62,13 @@ BEGIN
 	# Number of products supplied per Supplier with percentage of total over span of data history (4 years)
 
 	SELECT supplier,
-    neighborhood AS delivered_to,
+   	neighborhood AS delivered_to,
 	COUNT(ws.product_id) total_supplied,
 	(COUNT(ws.product_id)/(SELECT COUNT(*) FROM walmart_sales)) * 100 AS percent
 	FROM walmart_products wp
 	JOIN walmart_sales ws
 		ON wp.product_id = ws.product_id
-    JOIN walmart_inventory wi
+    	JOIN walmart_inventory wi
 		ON ws.product_id = wi.product_id
 	GROUP BY supplier, neighborhood
 	ORDER BY total_supplied DESC;
@@ -73,10 +76,11 @@ BEGIN
     
 	# Check to validate that each store has a single location for above script
 
-    SELECT DISTINCT * FROM
-    (SELECT store_name, neighborhood
-    FROM walmart_inventory
-    ORDER BY store_name) validate;
+	SELECT DISTINCT * 
+	FROM
+  	(SELECT store_name, neighborhood
+   	FROM walmart_inventory
+   	ORDER BY store_name) validate;
 
 	# Total sales over 4 years by geographical area
 
@@ -86,6 +90,16 @@ BEGIN
 		ON ws.product_id = wi.product_id
 	GROUP BY neighborhood
 	ORDER BY total_sales DESC;
+
+	# Top 10 products sold over period
+
+	SELECT product_name, ROUND(SUM(unit_price * quantity),2) AS total_sales
+	FROM walmart_products wp
+	JOIN walmart_sales ws
+		ON wp.product_id = ws.product_id
+	GROUP BY product_name
+	ORDER BY total_sales DESC
+	LIMIT 10;
     
 END $$
 
