@@ -1,6 +1,7 @@
 # BEST sales year and amount for each store
     
-    WITH top_sales AS (
+    WITH top_sales AS 
+	(
 	SELECT store_name, 
 	ROUND(SUM(unit_price * quantity),2) AS total_sales, 
 	YEAR(date) AS sale_year,
