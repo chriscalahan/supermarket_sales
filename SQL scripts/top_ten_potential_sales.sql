@@ -13,6 +13,7 @@
 		ORDER BY potential_sales DESC
 		LIMIT 10
 	)
+	
 	SELECT store_name,
 	potential_sales,
 	ROUND((potential_sales / (SELECT SUM(potential_sales) FROM potent_sales) * 100),2) AS percent
