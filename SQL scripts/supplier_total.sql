@@ -2,13 +2,13 @@
 
     SELECT supplier,
     neighborhood AS delivered_to,
-    COUNT(ws.product_id) total_supplied,
-    (COUNT(ws.product_id)/(SELECT COUNT(*) FROM walmart_sales)) * 100 AS percent
-    FROM walmart_products wp
-    JOIN walmart_sales ws
-	ON wp.product_id = ws.product_id
-    JOIN walmart_inventory wi
-	ON ws.product_id = wi.product_id
+    COUNT(ss.product_id) total_supplied,
+    (COUNT(ss.product_id)/(SELECT COUNT(*) FROM supermarket_sales)) * 100 AS percent
+    FROM supermarket_products sp
+    JOIN supermarket_sales ss
+	ON sp.product_id = ss.product_id
+    JOIN supermarket_inventory si
+	ON ss.product_id = si.product_id
     GROUP BY supplier, neighborhood
     ORDER BY total_supplied DESC;
     
@@ -16,5 +16,5 @@
 
     SELECT DISTINCT * FROM
     (SELECT store_name, neighborhood
-    FROM walmart_inventory
+    FROM supermarket_inventory
     ORDER BY store_name) validate;
