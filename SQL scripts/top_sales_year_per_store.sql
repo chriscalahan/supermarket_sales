@@ -6,9 +6,9 @@
 	ROUND(SUM(unit_price * quantity),2) AS total_sales, 
 	YEAR(date) AS sale_year,
 	DENSE_RANK() OVER(PARTITION BY store_name ORDER BY ROUND(SUM(unit_price * quantity),2) DESC) ranking
-	FROM walmart_sales ws
-	JOIN walmart_inventory wi
-		ON ws.product_id = wi.product_id
+	FROM supermarket_sales ss
+	JOIN supermarket_inventory si
+		ON ss.product_id = si.product_id
 	GROUP BY sale_year, store_name
 	ORDER BY ranking, sale_year
         ) 
