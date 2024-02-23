@@ -1,4 +1,4 @@
-# PLACED ALL DATA EXPLORATION SCRIPTS IN STORED PROCEDURE -- ALSO CREATED INDIVIAL VIEWS (NOT SHOWN)
+# PLACED ALL DATA EXPLORATION SCRIPTS IN STORED PROCEDURE -- ALSO CREATED INDIVIDUAL VIEWS (NOT SHOWN)
 
 
 DELIMITER $$
@@ -29,8 +29,8 @@ BEGIN
     
 	# BEST sales year and amount for each store
     
-    WITH top_sales AS 
-	(
+    	WITH top_sales AS 
+		(
 		SELECT store_name, 
 		ROUND(SUM(unit_price * quantity),2) AS total_sales, 
 		YEAR(date) AS sale_year,
@@ -40,7 +40,7 @@ BEGIN
 			ON ss.product_id = si.product_id
 		GROUP BY sale_year, store_name
 		ORDER BY ranking, sale_year
-        )
+        	)
 		
 	SELECT store_name, sale_year, total_sales
 	FROM top_sales
@@ -59,7 +59,7 @@ BEGIN
 	LIMIT 10;
 
 
-	# Number of products supplied per Supplier with percentage of total over span of data history (4 years)
+	# Number of products supplied per Supplier with the percentage of the total throughout data history (4 years)
 
 	SELECT supplier,
    	neighborhood AS delivered_to,
@@ -73,8 +73,8 @@ BEGIN
 	GROUP BY supplier, neighborhood
 	ORDER BY total_supplied DESC;
     
-    
-	# Check to validate that each store has a single location for above script
+	
+	# Check to validate that each store has a single location for the above script
 
 	SELECT DISTINCT * 
 	FROM
@@ -91,7 +91,7 @@ BEGIN
 	GROUP BY neighborhood
 	ORDER BY total_sales DESC;
 
-	# Top ten products sold and value over the entire period
+	# Top ten products sold and their value over the entire period
 
 	SELECT product_name, ROUND(SUM(unit_price * quantity),2) AS total_sales
 	FROM supermarket_products sp
@@ -100,6 +100,21 @@ BEGIN
 	GROUP BY product_name
 	ORDER BY total_sales DESC
 	LIMIT 10;
+
+	# Product Details - Metrics by product, store, and location
+	# It's important to view each metric together as the total sales don't necessarily mean it's a better-performing item. Unit cost and quantity ordered will 	# play a role.
+	
+	SELECT product_name, supplier, neighborhood, 
+		SUM(quantity) AS total_quantity, 
+		ROUND(AVG(unit_price),2) AS avg_price, 
+		ROUND(SUM(unit_price * quantity),2) AS total_sales
+	FROM supermarket_products sp
+	JOIN supermarket_sales ss
+		ON sp.product_id = ss.product_id
+	JOIN supermarket_inventory si
+		ON ss.product_id = si.product_id
+	GROUP BY product_name, supplier, neighborhood
+	ORDER BY total_sales DESC, total_quantity DESC;
     
 END $$
 
