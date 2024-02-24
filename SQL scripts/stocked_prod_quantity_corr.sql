@@ -6,10 +6,10 @@ CREATE temporary table temp_table AS
 			SUM(quantity) AS total_quantity, 
 			ROUND(AVG(unit_price),2) AS avg_price, 
 			ROUND(SUM(unit_price * quantity),2) AS total_sales
-	FROM walmart_products sp
-	JOIN walmart_sales ss
+	FROM supermarket_products sp
+	JOIN supermarket_sales ss
 		ON sp.product_id = ss.product_id
-	JOIN walmart_inventory si
+	JOIN supermarket_inventory si
 		ON ss.product_id = si.product_id
 	WHERE supplier IN ('Ben Franklin','Shopko','Family Dollar')
 	GROUP BY product_name, supplier, neighborhood
@@ -29,11 +29,11 @@ SELECT product_name,
 		SUM(quantity) AS total_quantity, 
 		ROUND(AVG(unit_price),2) AS avg_price, 
 		ROUND(SUM(unit_price * quantity),2) AS total_sales,
-        DENSE_RANK() OVER(PARTITION BY product_name ORDER BY SUM(quantity_available) DESC) AS ranking
-FROM walmart_products sp
-JOIN walmart_sales ss
+       		DENSE_RANK() OVER(PARTITION BY product_name ORDER BY SUM(quantity_available) DESC) AS ranking
+FROM supermarket_products sp
+JOIN supermarket_sales ss
 	ON sp.product_id = ss.product_id
-JOIN walmart_inventory si
+JOIN supermarket_inventory si
 	ON ss.product_id = si.product_id
 WHERE product_name IN (SELECT * FROM t2)
 GROUP BY product_name, supplier, neighborhood
